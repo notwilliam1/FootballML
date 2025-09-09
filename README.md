@@ -17,13 +17,13 @@ A machine learning model that predicts college football team success based on 20
 - **Best for**: Identifying poor and good teams (73% accuracy each)
 - **Challenge**: Distinguishing between good and excellent teams
 
+## 📝 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for all details.
+
 ## 🛠️ Installation
 
 1. Clone the repository:
 ```bash
 git clone https://github.com/notwilliam1/FootballML.git
 cd FootballML
-
-## 📝 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
