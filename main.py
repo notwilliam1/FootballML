@@ -17,16 +17,13 @@ print("Dataset shape:", data.shape)
 print("First few rows:")
 print(data.head())
 
-# Check for missing data
 print("\nMissing values:")
 print(data.isnull().sum().sum(), "total missing values")
 
-# Data cleaning
 print("\n" + "=" * 40)
 print("Cleaning the Data")
 print("=" * 40)
 
-# Remove unnamed index columns
 data = data.drop(data.columns[0], axis = 1)
 
 # Create target variable
@@ -48,7 +45,6 @@ def get_success_lvl(win_loss_record):
     except:
         return 1 # Default
     
-# Create target
 data['Team_Success'] = data['Win-Loss'].apply(get_success_lvl)
 
 print("Success levels:")
@@ -65,7 +61,6 @@ important_features = [
     'Total Tackle For Loss', '3rd Percent', 'Opponent 3rd Percent'
 ]
 
-# See if features are in data
 available_features = [col for col in important_features if col in data.columns]
 print(f"\nUsing {len(available_features)} features:", available_features)
 
@@ -83,7 +78,6 @@ X = X.fillna(X.median())
 
 print(f"\nFinal data shape: {X.shape}")
 
-# Split data into training and testing sets
 X_train, X_test, y_train, y_test = train_test_split(
     X, y, test_size = 0.3, random_state = 42
 )
@@ -102,7 +96,6 @@ x_test_scaled = scaler.transform(X_test)
 
 print("Features scaled to 0-1 range")
 
-# Train model
 print("\n" + "=" * 40)
 print("Training the Model")
 print("=" * 40)
@@ -135,7 +128,6 @@ final_model.fit(x_train_scaled, y_train)
 # Make predictions
 y_pred = final_model.predict(x_test_scaled)
 
-# Evaluate model
 print("\n" + "=" * 40)
 print("Model Results")
 print("=" * 40)
@@ -158,7 +150,6 @@ for i in range(3):
     labels = ["Poor", "Good", "Excellent"]
     print(f"{labels[i]} teams predicted correctly: {category_accuracy:.3f}")
 
-# Create visualizations
 print("\n" + "=" * 40)
 print("Creating Visuals")
 print("=" * 40)
@@ -189,7 +180,6 @@ axes[1].set_ylabel("Actual")
 plt.tight_layout()
 plt.show()
 
-# Predict new teams
 def predict_team_success(off_rank, def_rank, off_ypg, def_ypg_allowed,
                          ppg, ppg_allowed, turnover_margin, tfl,
                          third_down_pct, opp_third_down_pct):
@@ -203,10 +193,8 @@ def predict_team_success(off_rank, def_rank, off_ypg, def_ypg_allowed,
     new_team = [[off_rank, def_rank, off_ypg, def_ypg_allowed, ppg,
                  ppg_allowed, turnover_margin, tfl, third_down_pct, opp_third_down_pct]]
     
-    # Scale same as earlier
     new_team_scaled = scaler.transform(new_team)
 
-    # Make prediction
     prediction = final_model.predict(new_team_scaled)[0]
     probabilities = final_model.predict_proba(new_team_scaled)[0]
 
@@ -242,16 +230,13 @@ def predict_existing_team(team_name):
         print(f"2023 Record: {actual_record}")
         print(f"2023 Actual Success Level: {['Poor', 'Good', 'Excellent'][actual_success]}")
 
-        # Clean stats
         clean_stats = []
         for stat in team_stats:
             clean_stat = pd.to_numeric(stat, errors = 'coerce')
             clean_stats.append(clean_stat if not pd.isna(clean_stat) else team_stats.median())
 
-        # Scale stats
         team_scaled = scaler.transform([clean_stats])
 
-        # Make prediction
         prediction = final_model.predict(team_scaled)[0]
         probabilities = final_model.predict_proba(team_scaled)[0]
 
