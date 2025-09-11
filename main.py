@@ -1,6 +1,7 @@
 #Imports
 import pandas as pd
 import numpy as np
+import re
 
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import MinMaxScaler
@@ -185,8 +186,6 @@ def predict_team_success(off_rank, def_rank, off_ypg, def_ypg_allowed,
                          third_down_pct, opp_third_down_pct):
     """
     Predict how successful a team will be based on specific stats
-
-    Returns: prediction (0=Poor, 1=Good, 2=Excellent) and confidence
     """
 
     # Create data point with input stats
@@ -215,7 +214,8 @@ def predict_existing_team(team_name):
     """Predict succes for team in dataset"""
     try:
         # Find team
-        team_row = data[data['Team'].str.contains(team_name, case = False, na = False)]
+        escaped_team_name = re.escape(team_name)
+        team_row = data[data['Team'].str.contains(escaped_team_name, case = False, na = False)]
 
         if team_row.empty:
             print(f"Team '{team_name}' not found in dataset")
@@ -268,8 +268,8 @@ print("Manual Prediction Example")
 print("=" * 40)
 print("You can also predict any team manually using their stats:")
 print("predict_team_success(off_rank=10, def_rank=15, off_ypg=450, def_ypg_allowed=300,")
-print("                     ppg=35, ppg_allowed=20, turnover_margin=1.5, tfl=80,") 
-print("                     third_down_pct=0.45, opp_third_down_pct=0.30)")
+print("ppg=35, ppg_allowed=20, turnover_margin=1.5, tfl=80,") 
+print("third_down_pct=0.45, opp_third_down_pct=0.30)")
 
 # Show available teams
 print(f"\nAvailable teams in dataset ({len(data)} total):")
@@ -280,5 +280,43 @@ print("... and more")
 print("\n" + "=" * 40)
 print("Model Ready!")
 print("=" * 40)
-print("Use predict_team_success() to predict new teams")
-print("Use predict_existing_team('Team Name') to predict teams from the 2023 data")
+
+# User input 
+def user_input_prediction(user_team_name):
+    """Get user input to predict a team"""
+    print(f"Searching for teams containing '{user_team_name}'...")
+
+    matching_teams = data[data['Team'].str.contains(user_team_name, case = False, na = False)]
+
+    if matching_teams.empty:
+        print(f"No teams found matching '{user_team_name}'")
+        return
+    
+    print(f"Found {len(matching_teams)} matching teams:")
+    for i, team in enumerate(matching_teams['Team'].values, 1):
+        print(f"{i}. {team}")
+
+    selection = input("Enter the number of the team to predict (or 'cancel' to skip): ")
+    if selection.lower() == 'cancel':
+        print("Prediction cancelled.")
+        return
+    try:
+        selection = int(selection)
+        if 1 <= selection <= len(matching_teams):
+            team_name = matching_teams['Team'].values[selection - 1]
+            predict_existing_team(team_name)
+        else:
+            print("Invalid selection number.")
+    except ValueError:
+        print("Invalid input. Please enter a number or 'cancel'.")
+
+    return
+
+print()
+
+user_team_name = input("Enter a team name (case sensitive) to predict (or 'exit' to quit): ")
+
+while user_team_name != 'exit':
+    user_input_prediction(user_team_name)
+    user_team_name = input("\nEnter another team name (or 'exit' to quit): ")
+
