@@ -230,12 +230,12 @@ def predict_existing_team(team_name):
         print(f"2023 Record: {actual_record}")
         print(f"2023 Actual Success Level: {['Poor', 'Good', 'Excellent'][actual_success]}")
 
-        clean_stats = []
-        for stat in team_stats:
-            clean_stat = pd.to_numeric(stat, errors = 'coerce')
-            clean_stats.append(clean_stat if not pd.isna(clean_stat) else team_stats.median())
+        team_stats_numeric = pd.to_numeric(team_stats, errors = 'coerce')
 
-        team_scaled = scaler.transform([clean_stats])
+        clean_stats = team_stats_numeric.fillna(team_stats_numeric.median()).astype(float).values
+        clean_stats_df = pd.DataFrame([clean_stats], columns = available_features)
+
+        team_scaled = scaler.transform(clean_stats_df)
 
         prediction = final_model.predict(team_scaled)[0]
         probabilities = final_model.predict_proba(team_scaled)[0]
