@@ -254,7 +254,7 @@ def predict_existing_team(team_name):
         return None
 
 # Enter teams to predict
-teams_to_predict = ['Georgia Tech', 'Georgia', 'LSU', 'Ohio State', 'Clemson']
+teams_to_predict = ['Georgia Tech', 'Georgia', 'LSU', 'Ohio St.', 'Clemson']
 
 for team in teams_to_predict:
     team_exists = data['Team'].str.contains(team, case = False, na = False).any()
