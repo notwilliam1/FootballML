@@ -229,6 +229,8 @@ def predict_existing_team(team_name):
         print(f"\n{team_row['Team'].iloc[0]}:")
         print(f"2023 Record: {actual_record}")
         print(f"2023 Actual Success Level: {['Poor', 'Good', 'Excellent'][actual_success]}")
+        print("2023 Stats:")
+        print(team_stats.to_string())
 
         team_stats_numeric = pd.to_numeric(team_stats, errors = 'coerce')
 
